@@ -1,0 +1,158 @@
+* {
+    font-family: Lucida Sans, Arial, Helvetica, sans-serif;
+}
+
+.ui-mobile,
+.ui-mobile .ui-page {
+  background-color:transparent;
+}
+
+body {
+    margin: 0px auto;
+    background-image: url("../images/grunge_1920_hd.jpg")  ;
+    background-repeat: no-repeat;
+}
+
+header {
+	text-align: center;
+}
+
+header h1 {
+    font-size: 108px;
+    margin: 0px;
+    color:#D4D4D4;
+}
+
+header h2 {
+    font-size: 54px;
+    margin: 0px;
+    color: #888;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0px;
+    display: block;
+    clear: right;
+    background-color: #666;
+    padding-left: 4px;
+    height: 48px;
+}
+
+nav ul li {
+    display: inline;
+    padding: 0px 20px 5px 10px;
+    height: 48px;
+    border-right: 1px solid #ccc;
+}
+
+nav ul li a {
+    color: #EFD3D3;
+    text-decoration: none;
+    font-size: 39px;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #fff;
+}
+
+article > header h1 {
+    font-size: 60px;
+    margin-left: 14px;
+}
+
+article > header h1 a {
+    color: #993333;
+}
+
+article > header h1 img {
+    vertical-align:middle;
+}
+
+article > section header h1 {
+    font-size: 48px;
+}
+
+article p {
+    clear: both;
+}
+
+footer p {
+    text-align: right;
+    font-size: 36px;
+    color: #888;
+    position: absolute;
+	bottom: 0px;
+	right: 0px;
+	margin:0px;
+}
+
+#channelLogsDiv{
+	background: black;
+	opacity: 0.5;
+	margin: 50px;
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+	height : 750px;
+	width: 800px;
+	display: inline;
+	float: left;
+	color:white;
+}
+
+#clientsListDiv{
+	background: black;
+	opacity: 0.5;
+	margin: 50px;
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+	height : 750px;
+	width: 800px;
+	float: right;
+	color:white;
+}
+
+#channelLogsDiv h1{
+	text-align: center;
+}
+
+#clientsListDiv h1{
+	text-align: center;
+}
+
+#channelLogsDiv ul{
+	height:600px;
+	margin: 0px;
+	overflow:hidden; 
+	overflow-y:auto;
+}
+
+#logsContainer{
+	overflow:hidden; 
+	overflow-y:hidden;
+}
+
+#clientsListDiv ul{
+	height:600px;
+	overflow:hidden; 
+	overflow-y:auto;
+}
+
+#clientsList span{
+	text-align: right;
+	font-size: 30px;
+	padding-left: 10px;
+}
+
+#clientsList img{
+	width: 60px;
+	height: 60px;
+	vertical-align: middle;
+	/*background-image: url("../images/tizen_32.png");*/
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+#channelLogs li{
+	font-size: 30px;
+	padding-left: 10px;
+}

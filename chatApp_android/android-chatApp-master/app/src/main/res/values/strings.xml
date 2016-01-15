@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MSF CHAT APP</string>
+    <string name="device_list">Connect to TV</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="version">Version 2.0</string>
+    <string name="developer">Developer -- Abhinaw Tripathi</string>
+    <string name="thanks">Thanks -- Rahul</string>
+    <string name="copyright">&#169; 2015 Samsung Electronics Co.Ltd.</string>
+    <string name="about">
+        This application uses exposed APIs of MSF version 2.
+        It provides user an easy way to connect with TV and perform\ntasks like\n\n
+        -- launching,terminating,installing a TV cloud app or installed app\n\n
+        -- send messages to TV,a specific client,\na group of clients and even to self.
+    </string>
+    <string name="title_activity_about">AboutActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".Device">
+
+    <TextView
+        android:id="@+id/tvDeviceList"
+        android:text="@string/device_list"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:layout_margin="10dp" />
+
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/reload_refresh"
+        android:onClick="onClick"
+        android:layout_alignRight="@+id/tvDeviceList"
+        android:layout_alignTop="@+id/tvDeviceList"
+        android:layout_alignBottom="@+id/tvDeviceList"/>
+
+    <View
+        android:id="@+id/viewHLine"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/tvDeviceList"
+        android:layout_height="0dp" />
+
+    <ListView
+        android:id="@+id/lvDeviceList"
+        android:layout_alignTop="@+id/viewHLine"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/viewHLine"
+        android:background="@drawable/bg_white"
+        android:layout_margin="5dp"/>
+
+    </RelativeLayout>

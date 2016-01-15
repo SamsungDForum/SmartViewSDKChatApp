@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/getStatusWindow"
+    android:background="@color/material_deep_teal_500"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:id="@+id/tvGetStatus"
+        android:text="Get Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="19sp"/>
+
+    <TextView
+        android:id="@+id/tvInfo"
+        android:text="ERROR !!!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_below="@+id/tvGetStatus"
+        android:textColor="@android:color/white"
+        android:textSize="19sp"/>
+
+    </RelativeLayout>

@@ -1,0 +1,10 @@
+framework module MSF {
+  umbrella header "MSF.h"
+
+  export *
+  module * { export * }
+}
+
+module MSF.Swift {
+    header "MSF-Swift.h"
+}

@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/background"
+    >
+
+    <RelativeLayout
+        android:id="@+id/rlv_Headder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:src="@drawable/person"
+            android:scaleType="fitXY"
+            android:clickable="true"
+            android:onClick="onClick"
+            />
+
+       <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:layout_toRightOf="@+id/iv_icon"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+            android:textStyle="bold"
+           android:layout_marginLeft="20dp"
+            />
+
+        <EditText
+            android:id="@+id/edt_userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Username"
+            android:layout_below="@+id/txt_title"
+            android:layout_toRightOf="@+id/iv_icon"
+            android:layout_centerHorizontal="true"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:editable="true"
+            android:clickable="true"
+            android:background="@drawable/custom_bg"
+            android:layout_marginLeft="20dp"
+            />
+        </RelativeLayout>
+
+
+    <Button
+        android:id="@+id/btn_Discovery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:background="@android:color/black"
+        android:textColor="#ffffffff"
+        android:layout_centerInParent="true"
+        android:onClick="onClick"
+        android:width="150dp"
+        />
+
+    <Button
+        android:id="@+id/btn_About"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="About"
+        android:background="@android:color/black"
+        android:textColor="#ffffffff"
+        android:layout_below="@+id/btn_Discovery"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClick"
+        android:layout_marginTop="10dp"
+        android:width="150dp"
+        />
+
+    <TextView
+        android:id="@+id/txt_Version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 2.0"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        />
+
+</RelativeLayout>

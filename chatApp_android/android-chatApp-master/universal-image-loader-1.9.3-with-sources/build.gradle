@@ -1,0 +1,2 @@
+configurations.create("default")
+artifacts.add("default", file('universal-image-loader-1.9.3-with-sources.jar'))

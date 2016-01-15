@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="debug">false</bool>
+    <string name="photoshare_dev_url">http://dev-multiscreen-examples.s3-website-us-west-1.amazonaws.com/examples/photoshare/tv/</string>
+    <string name="photoshare_stage_url">http://stage-multiscreen-examples.s3-website-us-west-1.amazonaws.com/examples/photoshare/tv/</string>
+    <string name="photoshare_prod_url">http://prod-multiscreen-examples.s3-website-us-west-1.amazonaws.com/examples/photoshare/tv/</string>
+    <string name="photoshare_channel">com.samsung.multiscreen.photoshare</string>
+    <integer name="max_discovery_wait">10000</integer>
+</resources>
