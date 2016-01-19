@@ -9,21 +9,23 @@ ChatApp is a demo chat application written for android & iOS mobile devices & fo
 
 
 Log-in ChatApp with a username of your choice and an optional display picture
-◾
+
 ### 2. Select TV
-![](/chatApp_screenshot/chatapp01.png)
-![](/chatApp_screenshot/chatapp02.png)
+
 Select your TV in the device list. This launches the ChatApp on your TV.
 
 Note: ChatAppwidget should be installed on your TV.
 
+![](/chatApp_screenshot/chatapp01.png)
 
+![](/chatApp_screenshot/chatapp02.png)
 
 ###3.Choose client to chat
 
 Select the user,you want to chat with.
 
 Note: You can only see those users in the list, who are connected to same TV via ChatApp.
+
 ![](/chatApp_screenshot/chatapp03.png)
 
 ###4.Chat
