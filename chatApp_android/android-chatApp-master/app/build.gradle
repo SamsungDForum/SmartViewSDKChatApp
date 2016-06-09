@@ -23,5 +23,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:support-v13:22.2.0'
-    compile files('libs/android-msf-api-2.0.16.jar')
+    compile files('libs/android-smartview-sdk-2.3.0.jar')
 }
