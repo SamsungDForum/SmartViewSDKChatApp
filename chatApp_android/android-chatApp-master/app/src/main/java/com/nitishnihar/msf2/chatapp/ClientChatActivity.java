@@ -105,7 +105,7 @@ public class ClientChatActivity extends Activity {
 
 
     private void initializeAppAPI() {
-        application = service.createApplication(Uri.parse("chatApp"), "com.samsung.multiscreen.chatApp");
+        application = service.createApplication("FqdovJAul7.chatApp", "com.samsung.multiscreen.chatApp");
         application.addOnMessageListener("say", new Channel.OnMessageListener() {
 
             @Override
