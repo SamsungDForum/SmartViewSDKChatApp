@@ -10,11 +10,13 @@
 
 import Foundation
 import AssetsLibrary
-import MSF
+import SmartView
 import Darwin
 
 class ShareController : ServiceSearchDelegate, ChannelDelegate
 {
+    static let sharedInstance = ShareController()
+    
     let search = Service.search()
     var app: Application?
     var appURL: String = "http://prod-multiscreen-examples.s3-website-us-west-1.amazonaws.com/examples/photoshare/tv/"
@@ -23,9 +25,9 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     var isConnecting: Bool = false
     var services = [Service]()
     var connectionType:Bool = false
-    var imageByte:NSData?
+    var imageByte:Data?
     var userNameText : String = ""
-    var defaultImage:NSData?
+    var defaultImage:Data?
     var refreshOrStop:Int?
     var msgString:NSString = ""
     var clientname:String = ""
@@ -38,21 +40,9 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     var senderID:String = ""
     var allIds:[String] = []
     var allNames: [String] = []
-    class var sharedInstance : ShareController {
-        struct Static {
-            static var onceToken : dispatch_once_t = 0
-            static var instance : ShareController? = nil
-        }
-        
-        dispatch_once(&Static.onceToken) {
-            Static.instance = ShareController()
-        }
-        return Static.instance!
-    }
     
     init () {
         search.delegate = self
-       
     }
     
     func searchServices() {
@@ -60,16 +50,15 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         //   updateCastStatus()
     }
     
-    func connect(service: Service) {
+    func connect(_ service: Service) {
         search.stop()
         
         if (app != nil)
         {
             app?.disconnect()
-           
         }
         
-        app = service.createApplication(NSURL(string: appURL)!,channelURI: channelId, args: nil)
+        app = service.createApplication(URL(string: appURL)! as AnyObject,channelURI: channelId, args: nil)
         app!.delegate = self
       //  app!.connectionTimeout = 5
         self.isConnecting = true
@@ -77,75 +66,76 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         app!.connect()
     }
     
-    func stopSearch(status: Int)
+    func stopSearch(_ status: Int)
     {
         refreshOrStop = status
         search.stop()
     }
     
-   @objc func onClientConnect(client: ChannelClient)
+   @objc func onClientConnect(_ client: ChannelClient)
     {
-        //post a notification if a new client connects
-                NSNotificationCenter.defaultCenter().postNotificationName("clientGetsConnected", object: self, userInfo: ["addClient":client])
-        
+        // post a notification if a new client connects
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "clientGetsConnected"), object: self, userInfo: ["addClient":client])
     }
     
     ///  :param: client: The Client that just disconnected from the Channel
-    @objc func onClientDisconnect(client: ChannelClient)
+    @objc func onClientDisconnect(_ client: ChannelClient)
     {
-        
         //post a notification if a client disconnects
-          NSNotificationCenter.defaultCenter().postNotificationName("clientGetsDisconnected", object: self, userInfo: ["removeClient":client])
-        //post a notification if a client disconnects during chat
-          NSNotificationCenter.defaultCenter().postNotificationName("clientDisconnectedDuringChat", object: self, userInfo: ["clientdisconnect":client])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "clientGetsDisconnected"), object: self, userInfo: ["removeClient":client])
         
+        //post a notification if a client disconnects during chat
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "clientDisconnectedDuringChat"), object: self, userInfo: ["clientdisconnect":client])
     }
     
-    @objc func onConnect(client: ChannelClient?, error: NSError?) {
+    @objc func onConnect(_ client: ChannelClient?, error: NSError?) {
          NSLog("CONNECTED!!!!!!!!!!!!!!!!!!!!!")
         if (error != nil) {
             search.start()
             print(error?.localizedDescription)
-            NSNotificationCenter.defaultCenter().postNotificationName("channelGetsConnectedWithError", object: self, userInfo: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "channelGetsConnectedWithError"), object: self, userInfo: nil)
         }
         else{
         isConnecting = false
         let imageName = "person.jpg"
         let image = UIImage(named: imageName)
+            
         if(defaultImage == nil)
         {
             defaultImage = UIImageJPEGRepresentation(image!, 1.0)
         }
-         SendToHost("") //send userimage to TV
-         NSNotificationCenter.defaultCenter().postNotificationName("channelGetsConnected", object: self, userInfo: nil)
+    
+        SendToHost("") //send userimage to TV
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "channelGetsConnected"), object: self, userInfo: nil)
+        print("error is nil 4")
         }
         //    updateCastStatus()
     }
     
-    @objc func onDisconnect(client: ChannelClient?, error: NSError?) {
+    @objc func onDisconnect(_ client: ChannelClient?, error: NSError?) {
         print(error)
-        chatContent1.removeAll(keepCapacity: true)
+        chatContent1.removeAll(keepingCapacity: true)
         NSLog("DISCONNECTED!!!!!!!!!!!!!!!!!!!!!")
         search.start()
         app = nil
         isConnecting = false
 
         
-        NSNotificationCenter.defaultCenter().postNotificationName("channelGetsDisconnected", object: self, userInfo: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "channelGetsDisconnected"), object: self, userInfo: nil)
         
               //   updateCastStatus()
     }
     
-     @objc func onMessage(message: Message)
+     @objc func onMessage(_ message: Message)
     {
         NSLog("Message Received")
         print("message is \(message.data) from \(message.from)")
         let item:NSString = message.data as! NSString
         msgString = item
-        let jsonData = item.dataUsingEncoding(NSUTF8StringEncoding)
+        let jsonData = item.data(using: String.Encoding.utf8.rawValue)
         
         do {
-        let json = try NSJSONSerialization.JSONObjectWithData(jsonData!, options:NSJSONReadingOptions.MutableContainers)
+        let json = try JSONSerialization.jsonObject(with: jsonData!, options:JSONSerialization.ReadingOptions.mutableContainers)
         
         if let jsonDict = json as? NSDictionary{
             
@@ -165,7 +155,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
                     }
                 }
           
-                NSNotificationCenter.defaultCenter().postNotificationName("messageWhileChatting", object: self, userInfo: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "messageWhileChatting"), object: self, userInfo: nil)
                 
             }
             
@@ -179,7 +169,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         }
     }
     
-    @objc func onData(message: Message, payload: NSData)
+    @objc func onData(_ message: Message, payload: Data)
     {
         NSLog("Message Received")
     }
@@ -191,18 +181,18 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     }
 
 
-    @objc func onServiceFound(service: Service) {
+    @objc func onServiceFound(_ service: Service) {
         services.append(service)
         //    updateCastStatus()
     }
     
-    @objc func onServiceLost(service: Service) {
+    @objc func onServiceLost(_ service: Service) {
         removeObject(&services,object: service)
         //  updateCastStatus()
     }
     
     @objc func onStop() {
-         NSNotificationCenter.defaultCenter().postNotificationName("stopSearchonback", object: self, userInfo: nil)
+         NotificationCenter.default.post(name: Notification.Name(rawValue: "stopSearchonback"), object: self, userInfo: nil)
         if(connectionType == true)
         {
             searchServices()
@@ -210,24 +200,24 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         }
         if (refreshOrStop == 1)
         {
-            services.removeAll(keepCapacity: false)
+            services.removeAll(keepingCapacity: false)
         }
     }
     
-    func removeObject<T:Equatable>(inout arr:Array<T>, object:T) -> T? {
+    func removeObject<T:Equatable>(_ arr:inout Array<T>, object:T) -> T? {
         
-        if let found = arr.indexOf(object) {
-            return arr.removeAtIndex(found)
+        if let found = arr.index(of: object) {
+            return arr.remove(at: found)
         }
         return nil
     }
     
-    func launchApp(appId: String, index: Int)
+    func launchApp(_ appId: String, index: Int)
     {
         let tempService = services[index] as Service
         
         
-        app = tempService.createApplication(appId, channelURI: channelId, args:nil)
+        app = tempService.createApplication(appId as AnyObject, channelURI: channelId, args:nil)
         NSLog(channelId)
         app?.delegate = self
         self.isConnecting = true
@@ -236,11 +226,11 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     
     }
     
-    func launchAppWithURL(appURL: String, index:Int, timeOut: Int)
+    func launchAppWithURL(_ appURL: String, index:Int, timeOut: Int)
     {
         let tempService = services[index] as Service
         
-        app = tempService.createApplication(NSURL(string: appURL)!, channelURI: channelId, args: nil)
+        app = tempService.createApplication(URL(string: appURL)! as AnyObject, channelURI: channelId, args: nil)
         
         app!.delegate = self
         
@@ -264,43 +254,43 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return running
     }
     
-    func SendToHost(msgText: String)
+    func SendToHost(_ msgText: String)
     {
         if(app != nil)
         {
             if(imageByte != nil)
             {
                 NSLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                app!.publish(event: "say", message: "", data: imageByte! ,target: MessageTarget.Host.rawValue)
+                app!.publish(event: "say", message: "" as AnyObject?, data: imageByte! ,target: MessageTarget.Host.rawValue as AnyObject)
             }
             else
             {
                 if(defaultImage != nil)
                 {
 
-                    app!.publish(event: "say", message: "" ,data: defaultImage!, target: MessageTarget.Host.rawValue)
+                    app!.publish(event: "say", message: "" as AnyObject? ,data: defaultImage!, target: MessageTarget.Host.rawValue as AnyObject)
                 }
             }
         }
     }
     
-    func SendToAll(msgText: String)
+    func SendToAll(_ msgText: String)
     {
         if(app != nil)
         {
-            app?.publish(event: msgText, message: "hello")
+            app?.publish(event: msgText, message: "hello" as AnyObject?)
         }
     }
     
-    func SendBroadcast(msgText: String)
+    func SendBroadcast(_ msgText: String)
     {
         if(app != nil)
         {
-            app!.publish(event: "say", message: "Hello All of you", target: MessageTarget.Broadcast.rawValue)
+            app!.publish(event: "say", message: "Hello All of you" as AnyObject?, target: MessageTarget.Broadcast.rawValue as AnyObject)
         }
     }
     
-    func SendToClient(msgText: String, clientID :String)
+    func SendToClient(_ msgText: String, clientID :String)
     {
         if(app != nil)
         {
@@ -308,13 +298,13 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
             let  dic:NSDictionary  = ["Message":msgText, "ClientID":clientID]
             
             do {
-            let data =  try NSJSONSerialization.dataWithJSONObject(dic, options: NSJSONWritingOptions(rawValue: 0))
+            let data =  try JSONSerialization.data(withJSONObject: dic, options: JSONSerialization.WritingOptions(rawValue: 0))
             
-            let dataString = NSString( data: data, encoding: NSUTF8StringEncoding )
+            let dataString = NSString( data: data, encoding: String.Encoding.utf8.rawValue )
 
             print("data is \(dataString)")
             
-            app!.publish(event: "say", message: dataString , target: MessageTarget.Host.rawValue)
+            app!.publish(event: "say", message: dataString , target: MessageTarget.Host.rawValue as AnyObject)
             
             }
             catch let error as NSError
@@ -326,11 +316,11 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     }
     
     
-    func SendToManyClients(msgText: String)
+    func SendToManyClients(_ msgText: String)
     {
         if(app != nil)
         {
-            app!.publish(event: msgText, message: "Hello Client 1", target: app!.getClients())
+            app!.publish(event: msgText, message: "Hello Client 1" as AnyObject?, target: app!.getClients() as AnyObject)
         }
     }
     
@@ -366,12 +356,12 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return test
     }
     
-    func getImageData(dataofimage : NSData)
+    func getImageData(_ dataofimage : Data)
     {
         imageByte = dataofimage
         
     }
-    func setUserName(userName : String)
+    func setUserName(_ userName : String)
     {
         userNameText = userName
         
@@ -385,12 +375,12 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         {
             app?.disconnect()
             
-            services.removeAll(keepCapacity: false)
+            services.removeAll(keepingCapacity: false)
         }
 
     }
     
-    func disconnect(connectiontype :Bool)
+    func disconnect(_ connectiontype :Bool)
     {
         connectionType = connectiontype
         search.stop()
@@ -399,14 +389,14 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         {
             app?.disconnect()
             
-            services.removeAll(keepCapacity: false)
+            services.removeAll(keepingCapacity: false)
         }
         
     }
     
     @objc func clearServices()
     {
-        services.removeAll(keepCapacity: false)
+        services.removeAll(keepingCapacity: false)
         
     }
     
@@ -416,7 +406,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return msgString
     }
     
-    func setClientName(clientName :String)
+    func setClientName(_ clientName :String)
     {
         clientname = clientName
     }
@@ -425,7 +415,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return clientname
     }
     
-    func setClientID(clientID :String)
+    func setClientID(_ clientID :String)
     {
         clientId = clientID
         
@@ -434,7 +424,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     func getClientID() ->String{
         return clientId
     }
-    func setChatViewStatus(chatViewstatus: Bool)
+    func setChatViewStatus(_ chatViewstatus: Bool)
     {
        chatViewOpen = chatViewstatus
     }
@@ -442,7 +432,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     func getChatViewStatus()->Bool{
         return chatViewOpen
     }
-    func clientFound(clientid:String)
+    func clientFound(_ clientid:String)
     {
         var flag:Bool = true
         for (index,_) in chatContent1
@@ -458,7 +448,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         }
     }
     
-    func messageSent(clientid: String, msg :String){
+    func messageSent(_ clientid: String, msg :String){
         
         for (id, _) in chatContent1
         {
@@ -483,7 +473,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return chatContent1
     }
     
-    func setSenderid(clientid: String)
+    func setSenderid(_ clientid: String)
     {
         senderID = clientid
     }
@@ -494,16 +484,18 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
     }
     
     
-    func setSenderName(clientName : String)
+    func setSenderName(_ clientName : String)
     {
         var chat:String = clientName
         chat = chat + ":"
         let temp = getMessageData()
-        let jsonData = temp.dataUsingEncoding(NSUTF8StringEncoding)
+        let jsonData = temp.data(using: String.Encoding.utf8.rawValue)
         
         do
         {
-            let json: AnyObject? = try NSJSONSerialization.JSONObjectWithData(jsonData!, options:NSJSONReadingOptions.MutableContainers)
+           // let json: AnyObject = try JSONSerialization.jsonObject( with: data, options: JSONSerialization.ReadingOptions(rawValue: 0)) as AnyObject
+
+            let json: AnyObject = try JSONSerialization.jsonObject(with: jsonData!, options:JSONSerialization.ReadingOptions(rawValue: 0)) as AnyObject
             let jsonDict = json as? NSDictionary
           
             if let jsonDict = jsonDict
@@ -521,7 +513,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
 
     }
     
-    func getnamebyID(id:String) -> String
+    func getnamebyID(_ id:String) -> String
     {
         for index in 0 ..< allIds.count
         {
@@ -534,7 +526,7 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         return ""
     }
     
-    func updateChatContent(clientid :String, msg:String)
+    func updateChatContent(_ clientid :String, msg:String)
     {
         for (id, _) in chatContent1
         {
@@ -550,9 +542,9 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         print(chatContent1)
     }
     
-    func setClientIDs(clientids: [String])
+    func setClientIDs(_ clientids: [String])
     {
-        for var index=0;index < clientids.count;++index
+        for index in 0 ..< clientids.count
         {
           print(clientids[index])
             allIds.append(clientids[index])
@@ -561,9 +553,9 @@ class ShareController : ServiceSearchDelegate, ChannelDelegate
         print(allIds.count)
     }
     
-    func setClientNames(clientnames: [String])
+    func setClientNames(_ clientnames: [String])
     {
-        for var index=0;index < clientnames.count;++index
+        for index in 0 ..< clientnames.count
         {
             allNames.append(clientnames[index])
         }

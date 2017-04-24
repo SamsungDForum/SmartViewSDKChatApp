@@ -1,4 +1,4 @@
-	//
+//
 //  AllTVNetworkViewController.swift
 //  chatApp
 //
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-import MSF
+import SmartView
 
 class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITableViewDataSource
 {
@@ -17,7 +17,7 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
     var didRemoveServiceObserver: AnyObject? = nil
     
     var selectedTVName:String?
-    let activityIndicatorView:UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+    let activityIndicatorView:UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
     
     @IBOutlet weak var allTVNetworkView: UITableView!
     
@@ -26,36 +26,36 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
         super.viewDidLoad()
         
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
-        activityIndicatorView.frame = CGRectMake(50, 300, 10, 10)
+        activityIndicatorView.frame = CGRect(x: 50, y: 300, width: 10, height: 10)
         activityIndicatorView.center = self.view.center
         self.view.addSubview(activityIndicatorView)
 
         allTVNetworkView.delegate = self
         allTVNetworkView.dataSource = self
    
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "channelConnected:", name: "channelGetsConnected", object: nil)
-         NSNotificationCenter.defaultCenter().addObserver(self, selector: "channelConnectedwithError:", name: "channelGetsConnectedWithError", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "backbuttonpressed:", name: "stopSearchonback", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AllTVNetworkViewController.channelConnected(_:)), name: NSNotification.Name(rawValue: "channelGetsConnected"), object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(AllTVNetworkViewController.channelConnectedwithError(_:)), name: NSNotification.Name(rawValue: "channelGetsConnectedWithError"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AllTVNetworkViewController.backbuttonpressed(_:)), name: NSNotification.Name(rawValue: "stopSearchonback"), object: nil)
         self.navigationItem.title = "Chat App"
         
-        let buttonBack: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonBack.frame = CGRectMake(5, 5, 30, 30)
-        buttonBack.setImage(UIImage(named:"backImage.png"), forState:UIControlState.Normal)
-        buttonBack.addTarget(self, action: "leftNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        let buttonBack: UIButton = UIButton(type: UIButtonType.custom)
+        buttonBack.frame = CGRect(x: 5, y: 5, width: 30, height: 30)
+        buttonBack.setImage(UIImage(named:"backImage.png"), for:UIControlState())
+        buttonBack.addTarget(self, action: #selector(AllTVNetworkViewController.leftNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
-        let buttonRefresh: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonRefresh.frame = CGRectMake(300, 5, 30, 30)
-        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), forState:UIControlState.Normal)
-        buttonRefresh.addTarget(self, action: "rightNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        let buttonRefresh: UIButton = UIButton(type: UIButtonType.custom)
+        buttonRefresh.frame = CGRect(x: 300, y: 5, width: 30, height: 30)
+        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), for:UIControlState())
+        buttonRefresh.addTarget(self, action: #selector(AllTVNetworkViewController.rightNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
         let leftBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonBack)
-        self.navigationItem.setLeftBarButtonItem(leftBarButtonItem, animated: true)
+        self.navigationItem.setLeftBarButton(leftBarButtonItem, animated: true)
         allTVNetworkView.backgroundView = UIImageView(image: UIImage(named:"grunge_1920_hd.jpg"))
         let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonRefresh)
-        self.navigationItem.setRightBarButtonItem(rightBarButtonItem, animated: true)
+        self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
     }
     
-    func leftNavButtonClick(sender:UIButton!)
+    func leftNavButtonClick(_ sender:UIButton!)
     {
         ShareController.sharedInstance.stopSearch(1)
         if let viewController = self.navigationController?.viewControllers.first
@@ -64,7 +64,7 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
         }
     }
     
-    func rightNavButtonClick(sender:UIButton!)
+    func rightNavButtonClick(_ sender:UIButton!)
     {
         if (ShareController.sharedInstance.services.count != 0)
         {
@@ -82,7 +82,7 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
         // Dispose of any resources that can be recreated.
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
      
         didFindServiceObserver =  ShareController.sharedInstance.search.on(MSDidFindService) { [unowned self] notification in
             self.allTVNetworkView.reloadData()
@@ -93,23 +93,23 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
         }
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         ShareController.sharedInstance.search.off(didFindServiceObserver!)
         ShareController.sharedInstance.search.off(didRemoveServiceObserver!)
         
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "stopSearchonback", object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "stopSearchonback"), object: nil)
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
               NSLog("count is %d", ShareController.sharedInstance.services.count)
         
         return ShareController.sharedInstance.services.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("DeviceCell", forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "DeviceCell", for: indexPath)
         cell.textLabel?.text = ShareController.sharedInstance.services[indexPath.row].name
-        cell.textLabel?.textColor = UIColor.whiteColor()
+        cell.textLabel?.textColor = UIColor.white
         cell.backgroundView = UIImageView(image: UIImage(named:"grunge_1920_hd.jpg"))
         selectedTVName = ShareController.sharedInstance.services[indexPath.row].name
         cell.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
@@ -118,35 +118,34 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
         return cell
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Connect to TV"
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if ShareController.sharedInstance.search.isSearching {
             // set "chatApp" as app ID and launch and connect the application on TV
-            ShareController.sharedInstance.launchApp("chatApp", index: indexPath.row)
+            ShareController.sharedInstance.launchApp("chatApp.17", index: indexPath.row)
              self.activityIndicatorView.startAnimating()
         }
     }
     
-    
-   
-    
-    func channelConnected(notification: NSNotification!) {
-          self.activityIndicatorView.stopAnimating()
+    func channelConnected(_ notification: Notification!) {
+        
+        print("channelConnected success")
+        self.activityIndicatorView.stopAnimating()
         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-        let clientListViewController = storyBoard.instantiateViewControllerWithIdentifier("ClientListView") as! ClientListViewController
+        let clientListViewController = storyBoard.instantiateViewController(withIdentifier: "ClientListView") as! ClientListViewController
         self.navigationController?.pushViewController(clientListViewController, animated: true)
         
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
     }
     
-    func backbuttonpressed(notification: NSNotification!) {
+    func backbuttonpressed(_ notification: Notification!) {
         if let viewController = self.navigationController?.viewControllers.first
         {
             self.navigationController?.popToViewController(viewController, animated: true)
@@ -154,17 +153,17 @@ class AllTVNetworkViewController : UIViewController, UITableViewDelegate, UITabl
     }
     
    
-    func channelConnectedwithError(notification: NSNotification!)
+    func channelConnectedwithError(_ notification: Notification!)
     {
         self.activityIndicatorView.stopAnimating()
-        let alertView = UIAlertController(title: "ChatApp", message: "App not installed on TV. Please select another Device", preferredStyle: .Alert)
-        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default){
+        let alertView = UIAlertController(title: "ChatApp", message: "App not installed on TV. Please select another Device", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default){
             UIAlertAction in
             NSLog("OK Pressed")
             
         }
         alertView.addAction(okAction)
-        presentViewController(alertView, animated: true, completion: nil)
+        present(alertView, animated: true, completion: nil)
           self.allTVNetworkView.reloadData()
     }
   

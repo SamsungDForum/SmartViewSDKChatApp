@@ -28,20 +28,20 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        chatBtn.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        chatBtn.backgroundColor = UIColor.blackColor()
+        chatBtn.setTitleColor(UIColor.white, for: UIControlState())
+        chatBtn.backgroundColor = UIColor.black
         chatBtn.layer.cornerRadius = 8
         
-        aboutBtn.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        aboutBtn.backgroundColor = UIColor.blackColor()
+        aboutBtn.setTitleColor(UIColor.white, for: UIControlState())
+        aboutBtn.backgroundColor = UIColor.black
         aboutBtn.layer.cornerRadius = 8
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: "imageTapped:")
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(FirstViewController.imageTapped(_:)))
         imageWindow.addGestureRecognizer(tapGesture)
-        imageWindow.userInteractionEnabled = true
+        imageWindow.isUserInteractionEnabled = true
         
         self.userNameValue.delegate = self
-        userNameText.textColor = UIColor.whiteColor()
+        userNameText.textColor = UIColor.white
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
         self.navigationItem.title = "Chat App"
     }
@@ -52,24 +52,24 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func ShowCamera(sender: AnyObject) {
+    @IBAction func ShowCamera(_ sender: AnyObject) {
         
         if UIImagePickerController.isSourceTypeAvailable(
-            UIImagePickerControllerSourceType.Camera) {
+            UIImagePickerControllerSourceType.camera) {
                 let imagePicker = UIImagePickerController()
                 imagePicker.delegate = self
-                imagePicker.sourceType = UIImagePickerControllerSourceType.Camera
+                imagePicker.sourceType = UIImagePickerControllerSourceType.camera
                 imagePicker.mediaTypes = [kUTTypeImage as String]
                 imagePicker.allowsEditing = false
-                imagePicker.cameraDevice = UIImagePickerControllerCameraDevice.Front
-                self.presentViewController(imagePicker, animated: true,
+                imagePicker.cameraDevice = UIImagePickerControllerCameraDevice.front
+                self.present(imagePicker, animated: true,
                     completion: nil)
                 newMedia = true
                 
         }
     }
     
-    @IBAction func LoginButtonAction(sender: AnyObject) {
+    @IBAction func LoginButtonAction(_ sender: AnyObject) {
         
        // start searching the services
         ShareController.sharedInstance.searchServices()
@@ -81,22 +81,22 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
         }
         else
        {
-            let alertView = UIAlertController(title: "ChatApp", message: "Please enter your name to login!!", preferredStyle: .Alert)
+            let alertView = UIAlertController(title: "ChatApp", message: "Please enter your name to login!!", preferredStyle: .alert)
         
-            alertView.addAction(UIAlertAction(title: "Ok", style: .Default, handler: nil))
+            alertView.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
         
-            presentViewController(alertView, animated: true, completion: nil)
+            present(alertView, animated: true, completion: nil)
        }
         
     }
     
-    @IBAction func AboutBtnAction(sender: AnyObject) {
+    @IBAction func AboutBtnAction(_ sender: AnyObject) {
     
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         
         let image = info[UIImagePickerControllerOriginalImage]
             as! UIImage
@@ -106,6 +106,10 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
         if (newMedia == true) {
             UIImageWriteToSavedPhotosAlbum(image, self,
                 "image:didFinishSavingWithError:contextInfo:", nil)
+            
+          //  UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+            
+         //   UIImageWriteToSavedPhotosAlbum(image, self, Selector("image:didFinishSavingWithError:contextInfo:"), nil)
         }
 
     
@@ -128,29 +132,31 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
         }
     }
 */
-    func image(image: UIImage, didFinishSavingWithError error: NSErrorPointer, contextInfo:UnsafePointer<Void>) {
+    func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+
+//     func image(_ image: UIImage, didFinishSavingWithError error: NSErrorPointer?, contextInfo:UnsafeRawPointer) {
         
         if error != nil {
             let alert = UIAlertController(title: "Save Failed",
                 message: "Failed to save image",
-                preferredStyle: UIAlertControllerStyle.Alert)
+                preferredStyle: UIAlertControllerStyle.alert)
             
             let cancelAction = UIAlertAction(title: "OK",
-                style: .Cancel, handler: nil)
+                style: .cancel, handler: nil)
             
             alert.addAction(cancelAction)
-            self.presentViewController(alert, animated: true,
+            self.present(alert, animated: true,
                 completion: nil)
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
        
         
     }
     
-    func imageTapped(gesture: UIGestureRecognizer) {
+    func imageTapped(_ gesture: UIGestureRecognizer) {
         // if the tapped view is a UIImageView then set it to imageview
         if gesture.view is UIImageView {
             print("Image Tapped")
@@ -158,7 +164,7 @@ class FirstViewController : UIViewController , UITextFieldDelegate, UIImagePicke
         }
     }
     
-     func textFieldShouldReturn(textField: UITextField) -> Bool {
+     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         userNameValue.becomeFirstResponder()
         userNameValue.resignFirstResponder()

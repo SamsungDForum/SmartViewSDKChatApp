@@ -11,7 +11,7 @@ import Foundation
 
 import UIKit
 
-import MSF
+import SmartView
 
 class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
 {
@@ -37,31 +37,31 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         chatTableView.delegate = self
         chatTableView.dataSource = self
         self.sendMsgText.delegate = self
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "messageReceivedWhileChatting:", name: "messageWhileChatting", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatMainViewController.messageReceivedWhileChatting(_:)), name: NSNotification.Name(rawValue: "messageWhileChatting"), object: nil)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "clientDisconnectedDuringChatAction:", name: "clientDisconnectedDuringChat", object: nil)
-        let buttonBack: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonBack.frame = CGRectMake(5, 5, 30, 30)
-        buttonBack.setImage(UIImage(named:"backImage.png"), forState:UIControlState.Normal)
-        buttonBack.addTarget(self, action: "leftNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChatMainViewController.clientDisconnectedDuringChatAction(_:)), name: NSNotification.Name(rawValue: "clientDisconnectedDuringChat"), object: nil)
+        let buttonBack: UIButton = UIButton(type: UIButtonType.custom)
+        buttonBack.frame = CGRect(x: 5, y: 5, width: 30, height: 30)
+        buttonBack.setImage(UIImage(named:"backImage.png"), for:UIControlState())
+        buttonBack.addTarget(self, action: #selector(ChatMainViewController.leftNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
-        let buttonRefresh: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonRefresh.frame = CGRectMake(300, 5, 30, 30)
-        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), forState:UIControlState.Normal)
-        buttonRefresh.addTarget(self, action: "rightNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        let buttonRefresh: UIButton = UIButton(type: UIButtonType.custom)
+        buttonRefresh.frame = CGRect(x: 300, y: 5, width: 30, height: 30)
+        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), for:UIControlState())
+        buttonRefresh.addTarget(self, action: #selector(ChatMainViewController.rightNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
         let leftBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonBack)
-        self.navigationItem.setLeftBarButtonItem(leftBarButtonItem, animated: true)
+        self.navigationItem.setLeftBarButton(leftBarButtonItem, animated: true)
         
         let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonRefresh)
-        self.navigationItem.setRightBarButtonItem(rightBarButtonItem, animated: true)
+        self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
         
-        SendButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        SendButton.backgroundColor = UIColor.blackColor()
+        SendButton.setTitleColor(UIColor.white, for: UIControlState())
+        SendButton.backgroundColor = UIColor.black
         SendButton.layer.cornerRadius = 8
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
         let blackcolor : UIColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        sendMsgText.layer.borderColor = blackcolor.CGColor
+        sendMsgText.layer.borderColor = blackcolor.cgColor
         sendMsgText.layer.borderWidth = 1
         selectedClientName = ShareController.sharedInstance.getClientName()
         selectedClientId = ShareController.sharedInstance.getClientID()
@@ -73,16 +73,15 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
     {
         let chatData:[String:Array<String>] = ShareController.sharedInstance.getChatContent()
         
-       // for val in chatData
-        
-        for( index,(val,message) ) in chatData.enumerate()
+       // for val in chatData index,(val,message) )
+            
+        for (val, message) in chatData
         {
-            print(index)
             print(val)
             print(message)
             if(val == selectedClientId)
             {
-                for var index = 0; index < message.count; index++
+                for index in 0 ..< message.count
                 {
                     if(message[index] != "")
                     {
@@ -91,49 +90,48 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
                     }
                 }
             }
-         
         }
         
     }
     
     
     
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         
         animateViewMoving(true, moveValue : 255)
            }
     
     
-    func textFieldDidEndEditing(textField: UITextField) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
         animateViewMoving(false, moveValue : 255)
     
     }
     
     
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
       ShareController.sharedInstance.setChatViewStatus(false)
     }
-    func animateViewMoving(up : Bool, moveValue: CGFloat)
+    func animateViewMoving(_ up : Bool, moveValue: CGFloat)
     {
-        let movementDuration:NSTimeInterval = 0.3
+        let movementDuration:TimeInterval = 0.3
         let movement: CGFloat = ( up ? -moveValue : moveValue)
         UIView.beginAnimations("animateView", context: nil)
         UIView.setAnimationBeginsFromCurrentState(true)
         UIView.setAnimationDuration(movementDuration)
-        self.view.frame = CGRectOffset(self.view.frame, 0, movement)
+        self.view.frame = self.view.frame.offsetBy(dx: 0, dy: movement)
         UIView.commitAnimations()
         
     }
     
     
     
-    func leftNavButtonClick(sender:UIButton!)
+    func leftNavButtonClick(_ sender:UIButton!)
     {
         let viewControllers:[UIViewController] = self.navigationController!.viewControllers
         self.navigationController?.popToViewController(viewControllers[ 2], animated: true)//
     }
     
-    func rightNavButtonClick(sender:UIButton!)
+    func rightNavButtonClick(_ sender:UIButton!)
     {
         
     }
@@ -143,17 +141,17 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         
    //     NSLog("client Name is %s", selectedClientName!)
-        sendMsgText.borderStyle = UITextBorderStyle.RoundedRect;
+        sendMsgText.borderStyle = UITextBorderStyle.roundedRect;
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         chatView = false
     }
     
-    @IBAction func SendButtonAction(sender: AnyObject) {
+    @IBAction func SendButtonAction(_ sender: AnyObject) {
         
    
         
@@ -181,7 +179,7 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         NSLog("all chat count is %d", allChat.count)
         
@@ -199,28 +197,28 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         return count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("ChatCell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath)
         cell.backgroundView = UIImageView(image: UIImage(named:"grunge_1920_hd.jpg"))
         cell.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
         cell.textLabel?.text = allChat[indexPath.row]
-        cell.textLabel?.textColor = UIColor.whiteColor()
+        cell.textLabel?.textColor = UIColor.white
         return cell
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return ShareController.sharedInstance.getClientName()
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
     }
     
     
    
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         sendMsgText.becomeFirstResponder()
         sendMsgText.resignFirstResponder()
@@ -228,12 +226,12 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         return true
     }
 
-    func textFieldShouldClear(textField: UITextField) -> Bool
+    func textFieldShouldClear(_ textField: UITextField) -> Bool
     {
         return true
     }
     
-    func clientDisconnectedDuringChatAction(notification: NSNotification!)
+    func clientDisconnectedDuringChatAction(_ notification: Notification!)
     {
         let client = notification.userInfo?["clientdisconnect"] as! ChannelClient
         
@@ -243,26 +241,28 @@ class ChatMainViewController : UIViewController, UITextFieldDelegate, UITableVie
         print("name value is \(nameValue) and id is \(client.id)")
         if(client.id == ShareController.sharedInstance.getClientID())
         {
-            let alertView = UIAlertController(title: "ChatApp", message: "Client Disconnected!! Please try again later...", preferredStyle: .Alert)
-            let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default){
+            let alertView = UIAlertController(title: "ChatApp", message: "Client Disconnected!! Please try again later...", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default){
                 UIAlertAction in
                 NSLog("OK Pressed")
                 let viewControllers:[UIViewController] = self.navigationController!.viewControllers
                 self.navigationController?.popToViewController(viewControllers[ 2], animated: true)//
             }
             alertView.addAction(okAction)
-            presentViewController(alertView, animated: true, completion: nil)
+            present(alertView, animated: true, completion: nil)
         }
     }
     
-    func messageReceivedWhileChatting(notification :NSNotification!)
+    func messageReceivedWhileChatting(_ notification :Notification!)
     {
         let msgData = ShareController.sharedInstance.getMessageData()
-        let jsonData = msgData.dataUsingEncoding(NSUTF8StringEncoding)
+        let jsonData = msgData.data(using: String.Encoding.utf8.rawValue)
         
         do {
-        let json: AnyObject? = try NSJSONSerialization.JSONObjectWithData(jsonData!, options:NSJSONReadingOptions.MutableContainers)
+        //let json: AnyObject? = try JSONSerialization.jsonObject(with: jsonData!, options:JSONSerialization.ReadingOptions.mutableContainers)
         
+        let json = try JSONSerialization.jsonObject(with: jsonData!, options:JSONSerialization.ReadingOptions.mutableContainers)    
+            
         let jsonDict = json as? NSDictionary
         if let jsonDict = jsonDict
         {

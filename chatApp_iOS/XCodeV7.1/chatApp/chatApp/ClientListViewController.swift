@@ -9,14 +9,14 @@
 import Foundation
 import UIKit
 
-import MSF
+import SmartView
 
 
 class ClientListViewController : UIViewController, UITableViewDelegate, UITableViewDataSource
 {
     var clientList:[ChannelClient] = []
     var selectedTVName:String?
-    let activityIndicatorView:UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+    let activityIndicatorView:UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
     var allIds:[String] = []
     var allNames: [String] = []
     var leftbuttonpressed:Bool = false
@@ -28,37 +28,36 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
         allClientListView.delegate = self
         allClientListView.dataSource = self
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "clientConnected:", name: "clientGetsConnected", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "clientDisconnected:", name: "clientGetsDisconnected", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "channelDisconnected:", name: "channelGetsDisconnected", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ClientListViewController.clientConnected(_:)), name: NSNotification.Name(rawValue: "clientGetsConnected"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ClientListViewController.clientDisconnected(_:)), name: NSNotification.Name(rawValue: "clientGetsDisconnected"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ClientListViewController.channelDisconnected(_:)), name: NSNotification.Name(rawValue: "channelGetsDisconnected"), object: nil)
         self.navigationItem.title = "Chat App"
         
-        let buttonBack: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonBack.frame = CGRectMake(5, 5, 30, 30)
-        buttonBack.setImage(UIImage(named:"backImage.png"), forState:UIControlState.Normal)
-        buttonBack.addTarget(self, action: "leftNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        let buttonBack: UIButton = UIButton(type: UIButtonType.custom)
+        buttonBack.frame = CGRect(x: 5, y: 5, width: 30, height: 30)
+        buttonBack.setImage(UIImage(named:"backImage.png"), for:UIControlState())
+        buttonBack.addTarget(self, action: #selector(ClientListViewController.leftNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
-        let buttonRefresh: UIButton = UIButton(type: UIButtonType.Custom)
-        buttonRefresh.frame = CGRectMake(300, 5, 30, 30)
-        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), forState:UIControlState.Normal)
-        buttonRefresh.addTarget(self, action: "rightNavButtonClick:", forControlEvents: UIControlEvents.TouchUpInside)
+        let buttonRefresh: UIButton = UIButton(type: UIButtonType.custom)
+        buttonRefresh.frame = CGRect(x: 300, y: 5, width: 30, height: 30)
+        buttonRefresh.setImage(UIImage(named:"refresh_Image.png"), for:UIControlState())
+        buttonRefresh.addTarget(self, action: #selector(ClientListViewController.rightNavButtonClick(_:)), for: UIControlEvents.touchUpInside)
         
         let leftBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonBack)
-        self.navigationItem.setLeftBarButtonItem(leftBarButtonItem, animated: true)
+        self.navigationItem.setLeftBarButton(leftBarButtonItem, animated: true)
         
         let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: buttonRefresh)
-        self.navigationItem.setRightBarButtonItem(rightBarButtonItem, animated: true)
+        self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
         
-        activityIndicatorView.frame = CGRectMake(50, 300, 10, 10)
+        activityIndicatorView.frame = CGRect(x: 50, y: 300, width: 10, height: 10)
         activityIndicatorView.center = self.view.center
         self.view.addSubview(activityIndicatorView)
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
         allClientListView.backgroundView = UIImageView(image: UIImage(named:"grunge_1920_hd.jpg"))
-        
     }
    
     
-    func leftNavButtonClick(sender:UIButton!)
+    func leftNavButtonClick(_ sender:UIButton!)
     {
         
          leftbuttonpressed = true
@@ -67,21 +66,21 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
 
     }
     
-    func rightNavButtonClick(sender:UIButton!)
+    func rightNavButtonClick(_ sender:UIButton!)
     {
-        allNames.removeAll(keepCapacity: false)
-        allIds.removeAll(keepCapacity: false)
+        allNames.removeAll(keepingCapacity: false)
+        allIds.removeAll(keepingCapacity: false)
         
         clientList = ShareController.sharedInstance.getAllConnectedClients()
         
-        for var index=0;index < clientList.count;++index
+        for index in 0 ..< clientList.count
         {
             var tempDict : [String:String] = (clientList[index].attributes as? [String : String])!
             let nameValue = tempDict["name"]
             
             print("name value is \(nameValue) and id is \(clientList[index].id)")
             
-            if(nameValue != String(UIDevice.currentDevice().name) && clientList[index].isHost != true)
+            if(nameValue != String(UIDevice.current.name) && clientList[index].isHost != true)
             {
                 allNames.append(nameValue!)
                 
@@ -96,26 +95,26 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
         
         // Dispose of any resources that can be recreated.
     }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
       
         allClientListView.reloadData()
         
     }
-     override func viewWillAppear(animated: Bool) {
+     override func viewWillAppear(_ animated: Bool) {
         
         clientList = ShareController.sharedInstance.getAllConnectedClients()
         
         if(allNames.count > 0)
         {
-            allNames.removeAll(keepCapacity: false)
+            allNames.removeAll(keepingCapacity: false)
         }
         
         if(allIds.count > 0)
         {
-            allIds.removeAll(keepCapacity: false)
+            allIds.removeAll(keepingCapacity: false)
         }
         
-        for var index=0;index < clientList.count;++index
+        for index in 0 ..< clientList.count
         {
              var tempDict : [String:String] = (clientList[index].attributes as? [String : String])!
              let nameValue = tempDict["name"]
@@ -134,39 +133,39 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
     }
     
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         ShareController.sharedInstance.setClientIDs(allIds)
         ShareController.sharedInstance.setClientNames(allNames)
     }
 
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
         NSLog("client list count is %d", clientList.count)
         
         return allNames.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("ClientCell", forIndexPath: indexPath) 
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ClientCell", for: indexPath) 
         
         cell.textLabel?.text = allNames[indexPath.row]
-        cell.textLabel?.textColor = UIColor.whiteColor()
+        cell.textLabel?.textColor = UIColor.white
          cell.backgroundView = UIImageView(image: UIImage(named:"grunge_1920_hd.jpg"))
         cell.backgroundColor = UIColor(patternImage: UIImage(named: "grunge_1920_hd.jpg")!)
         ShareController.sharedInstance.clientFound(allIds[indexPath.row])
         return cell
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Connect to client"
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-        let chatViewController = storyBoard.instantiateViewControllerWithIdentifier("ChatMainView") as! ChatMainViewController
+        let chatViewController = storyBoard.instantiateViewController(withIdentifier: "ChatMainView") as! ChatMainViewController
         
         chatViewController.selectedClientId = allIds[indexPath.row]
  
@@ -180,7 +179,7 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
         self.navigationController?.pushViewController(chatViewController, animated: true)
     }
     
-    func clientConnected(notification: NSNotification!) {
+    func clientConnected(_ notification: Notification!) {
         
         let client = notification.userInfo?["addClient"] as! ChannelClient
         
@@ -196,7 +195,7 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
         allClientListView.reloadData()
     }
     
-    func clientDisconnected(notification: NSNotification!) {
+    func clientDisconnected(_ notification: Notification!) {
         
         let client = notification.userInfo?["removeClient"] as! ChannelClient
         
@@ -205,12 +204,12 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
         
         print("name value is \(nameValue) and id is \(client.id)")
         
-        for var index = 0; index < allNames.count; index++
+        for index in 0 ..< allNames.count
         {
             if (client.id == allIds[index] )
             {
-                allIds.removeAtIndex(index)
-                allNames.removeAtIndex(index)
+                allIds.remove(at: index)
+                allNames.remove(at: index)
                 
                 allClientListView.reloadData()
             }
@@ -218,7 +217,7 @@ class ClientListViewController : UIViewController, UITableViewDelegate, UITableV
     }
     
 
-    func channelDisconnected(notification: NSNotification!) {
+    func channelDisconnected(_ notification: Notification!) {
       
         self.activityIndicatorView.stopAnimating()
         leftbuttonpressed = false
